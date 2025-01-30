@@ -223,6 +223,7 @@ def hybrid_recommander(user_id: int, clicks: pd.DataFrame, articles_embeddings: 
     article_min_clicks: le nombre minimal de clics par article
     """
 
+    user_id = int(user_id)
     user_clicks = clicks.loc[clicks["user_id"] == user_id].groupby("click_article_id").size().sum()
 
     if user_clicks == 0:

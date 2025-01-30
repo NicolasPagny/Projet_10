@@ -3,3 +3,5 @@ datasets*
 .python_packages
 __pycache__
 .vscode*
+__azurite*
+__blobstorage*
