@@ -1,7 +1,4 @@
 datasets*
 .venv*
-.python_packages
-__pycache__
-.vscode*
-__azurite*
-__blobstorage*
+__pycache__*
+Sandbox.*
