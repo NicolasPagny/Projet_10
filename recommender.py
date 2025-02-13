@@ -1,3 +1,8 @@
+
+############################################################################################################
+# Ce fichier comporte des diverses fonctions permettant l'exécution des différents systèmes de recommandations
+############################################################################################################
+
 import numpy as np
 import pandas as pd
 

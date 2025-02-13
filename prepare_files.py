@@ -1,3 +1,9 @@
+############################################################################################################
+# Ce fichier contient des fonctions qui permet d'effectuer des réductions de dimensions ou 
+# des fonctions qui précalculent certains opérations afin d'économiser les ressources et d'accélérer 
+# le temps de calcul des systèmes de recommandations
+############################################################################################################
+
 import pandas as pd
 import numpy as np
 from sklearn.decomposition import PCA
@@ -155,33 +161,3 @@ def preds_svds_user(df_clicks: pd.DataFrame, n_factors:int = 15, user_min_clicks
     predicted_rating_norm = _pred_svds(filtered_clicks, n_factors)
 
     return predicted_rating_norm
-
-def hybride_preds_user(user_id:int, df_clicks: pd.DataFrame, df_embeddings_articles:pd.DataFrame, n_factors:int = 15, user_min_clicks:int = 10, article_min_clicks:int = 100):
-
-    # Obtenir les articles de la recommandation content based filtering
-    essential_informations = clicks_essentials_informations(df_clicks)
-    content_based_articles = _cosine_similar_articles(essential_informations.loc[user_id]["last_article"], df_embeddings_articles)
-
-    # Obtenir les n articles recommandés avec la factorisation de matrice SVD
-    df_svds = preds_svds_user(df_clicks, n_factors, user_min_clicks, article_min_clicks)
-    collaborative_filtering_articles = df_svds
-
-    # Garder les articles correspondant aux articles filtrés
-    index_to_keep = list(collaborative_filtering_articles.keys())
-    filtered_content_based_articles = pd.Series({key: value for key, value in content_based_articles if key in index_to_keep})
-    filtered_content_based_articles.index.name = "click_article_id"
-
-    # Normaliser les deux recommandations afin de les combiner
-    scaler = MinMaxScaler()
-    cb_scaled = scaler.fit_transform(filtered_content_based_articles.values.reshape(-1, 1))
-    cf_scaled = scaler.fit_transform(collaborative_filtering_articles.values.reshape(-1, 1))
-
-    print(cb_scaled.shape)
-    print(cf_scaled.shape)
-
-    # Combiner les deux recommandations
-    hybrid_articles = cb_scaled * cf_scaled
-    hybrid_articles = pd.Series(hybrid_articles.ravel(), index=filtered_content_based_articles.index)
-    best_hybrid_articles = hybrid_articles.nlargest(n)
-
-    return "hybrid", best_hybrid_articles
