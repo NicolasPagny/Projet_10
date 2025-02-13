@@ -245,7 +245,10 @@ def best_preds_svds_user(user_id: int, clicks: pd.DataFrame, n_factors:int = 15,
 
     # Obtenir les n articles recommandés avec la factorisation de matrice SVD
     collaborative_filtering_articles = preds_svds_user(user_id, clicks, n_factors, user_min_clicks, article_min_clicks)
-    best_articles = collaborative_filtering_articles.sort_values(ascending=False)[:n]
+    if collaborative_filtering_articles is not None:
+        best_articles = collaborative_filtering_articles.sort_values(ascending=False)[:n]
+    else:
+        best_articles = None
 
     # Obtenir les meilleures prédictions pour l'utilisateur
     return best_articles
